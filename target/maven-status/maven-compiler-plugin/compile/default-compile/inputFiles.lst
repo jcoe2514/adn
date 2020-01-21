@@ -1,0 +1,11 @@
+/home/mateo/wsEjercicios/adn/src/main/java/com/adn/sistema/config/ConfigurationApp.java
+/home/mateo/wsEjercicios/adn/src/main/java/com/adn/sistema/dao/impl/ProductoDAOImpl.java
+/home/mateo/wsEjercicios/adn/src/main/java/com/adn/sistema/controller/ProductoController.java
+/home/mateo/wsEjercicios/adn/src/main/java/com/adn/sistema/controller/HelloController.java
+/home/mateo/wsEjercicios/adn/src/main/java/com/adn/sistema/service/impl/ProductoServiceImpl.java
+/home/mateo/wsEjercicios/adn/src/main/java/com/adn/sistema/entity/Producto.java
+/home/mateo/wsEjercicios/adn/src/main/java/com/adn/sistema/Main.java
+/home/mateo/wsEjercicios/adn/src/main/java/com/adn/sistema/repository/ProductoRepository.java
+/home/mateo/wsEjercicios/adn/src/main/java/com/adn/sistema/dao/ProductoDAO.java
+/home/mateo/wsEjercicios/adn/src/main/java/com/adn/sistema/filters/CorsFilters.java
+/home/mateo/wsEjercicios/adn/src/main/java/com/adn/sistema/service/ProductoService.java
