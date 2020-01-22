@@ -5,13 +5,20 @@ import org.springframework.stereotype.Repository;
 
 import com.adn.sistema.dao.AdnDAO;
 import com.adn.sistema.entity.Adn;
+import com.adn.sistema.entity.CountMutation;
 import com.adn.sistema.repository.AdnRepository;
+import com.adn.sistema.repository.CountMutationRepository;
 
 @Repository
 public class AdnDAOImpl implements AdnDAO {
 
+	int countMutation = 0;
+	int countNoMutation = 0;
+
 	@Autowired
 	private AdnRepository adnRepository;
+	@Autowired
+	private CountMutationRepository countMutationRepository;
 	boolean isMutation = false;
 
 	@Override
@@ -20,6 +27,12 @@ public class AdnDAOImpl implements AdnDAO {
 		adn.setLastAdn(matrix);
 		adn.setMutation(isMutation);
 		adnRepository.save(adn);
+		CountMutation mutation = new CountMutation();
+		mutation.setCountMutations(countMutation);
+		mutation.setCountNoMutation(countNoMutation);
+		Double ratio = (double) (countMutation/ countNoMutation);
+		mutation.setRatio(ratio);
+		countMutationRepository.save(mutation);
 
 	}
 
@@ -29,7 +42,7 @@ public class AdnDAOImpl implements AdnDAO {
 		contar(matrix);
 		char[][] matrixRotate = this.rotateMatrix(matrix);
 		contar(matrixRotate);
-		recordDiagonalUp(matrix);
+		rotateMatrixOblicua1(matrix);
 		recordDiagonalDown(matrix);
 		this.save(adn);
 
@@ -60,10 +73,12 @@ public class AdnDAOImpl implements AdnDAO {
 					if (matrix[i][j - 1] == (matrix[i][j])) {
 						contador++;
 						if (contador == 4) {
+							countMutation++;
 							isMutation = true;
 						}
 
 					} else {
+						countNoMutation++;
 						contador = 1;
 					}
 				}
@@ -80,67 +95,59 @@ public class AdnDAOImpl implements AdnDAO {
 		for (int i = 0, j = tamanho - 1; i < tamanho && j >= 0; i++, j--) {
 			for (int k = 0; k < tamanho; k++) {
 				novaMatrix[k][j] = matrix[i][k];
-				System.out.print(matrix[k][j]);
-
-				if (k == matrix.length - 1) {
-					System.out.println();
-				}
 			}
 		}
 		return novaMatrix;
 	}
 
-	private char[][] recordDiagonalUp(char[][] matrix) {
-		char[] aux = new char[matrix.length];
-		int index = 2;
-		int countX = index;
-		int countY = 0;
+	private char[][] rotateMatrixOblicua1(char[][] matrix) {
+		int tamanho = matrix.length + matrix[0].length - 1;
+		char[][] matrixRotate = new char[tamanho][matrix[0].length];
+		char[] aux = null;
+		System.out.println("length matriz:: " + matrixRotate.length);
+		int index = 0;
 		int count = 1;
-		int position = 0;
-		for (int i = 0; i < matrix.length; i++) {
-			for (int j = 0; j < matrix[i].length; j++) {
-				aux[position] = matrix[countY][countX];
-				System.out.println(aux[position]);
-				if (position > 0) {
-					if (aux[position - 1] == matrix[countY][countX]) {
-						count++;
-						if (count == 4)
-							isMutation = true;
+		;
+		for (int i = 0, m = 0, j = 0; i < tamanho; i++, m++, j++) {
+			if (i >= matrix.length) {
+				index = index - 2;
+			}
+			aux = new char[index + 1];
+			if (i == tamanho - 1)
+				break;
+			for (int k = 0, l = 0, n = 0; k <= index || n <= index; k++, l++, n++) {
+				if (i >= matrix.length) {
+					j = i;
+					k = i - matrix.length + n;
+					k++;
+					l = i - matrix.length;
 
+				}
+
+				matrixRotate[m][l] = matrix[j - k][k];
+				aux[n] = matrixRotate[m][l];
+				if (n > 0) {
+					if (aux[n - 1] == aux[n]) {
+						if (count == 4) {
+							countMutation++;
+						}
+						count++;
 					} else {
+						countNoMutation++;
 						count = 1;
 					}
 
 				}
-				position++;
-				countY++;
-				countX++;
-				if (countX == matrix.length) {
-					position = countY = 0;
-					count = 1;
-					countX = index - i - 1;
-					if (countX < 0) {
-						countY = Math.abs(countX);
-						countX = j - index;
 
-					}
+				if (n == index) {
+					System.out.println();
 				}
-				if (i >= 3 && (countY > countX) & j == 1) {
-					countX = 0;
-					countY = i - 1;
-					position = 0;
-
-				}
-
-				if (matrix.length - (i + 1) == 2)
-					break;
 
 			}
-			if (matrix.length - (i + 1) == 2)
-				break;
-
+			index++;
 		}
-		return matrix;
+		return matrixRotate;
+
 	}
 
 	private char[][] recordDiagonalDown(char[][] matrix) {
@@ -158,9 +165,11 @@ public class AdnDAOImpl implements AdnDAO {
 					if (aux[position - 1] == matrix[countY][countX]) {
 						count++;
 						if (count == 4)
+							countMutation++;
 							isMutation = true;
 
 					} else {
+						countNoMutation++;
 						count = 1;
 					}
 
@@ -203,56 +212,10 @@ public class AdnDAOImpl implements AdnDAO {
 		return matrix;
 	}
 
-//	public String[][] recordDiagonal(String[][] matrix) {
-//
-//		int contador = 1;
-//		int contadorSecond = 1;
-//		String[] diagonalPrincipal = new String[matrix.length];
-//		String[] diagoSecundaria = new String[matrix.length];
-//		for (int i = 0; i < matrix.length; i++) {
-//			for (int j = 0; j < matrix[i].length; j++) {
-//				if (i == j) {
-//					diagonalPrincipal[i] = matrix[i][j];
-//					contador++;
-//					if (diagonalPrincipal[i - j].equals(diagonalPrincipal[i])) {
-//						if (contador == 4) {
-//							System.out.println("mutacion PRIMERA DIAGONAL");
-//						}
-//					} else {
-//						contador = 1;
-//					}
-//				}
-//
-//				if (i + j == matrix.length - 1) {
-//					diagoSecundaria[i] = matrix[i][j];
-//					contadorSecond++;
-//					System.out.print(diagoSecundaria[i]);
-//					if (contadorSecond == 4) {
-//						System.out.println("mutacion");
-//					}
-//				} else {
-//					contadorSecond = 1;
-//				}
-//			}
-//			System.out.println();
-//		}
-//
-//		return matrix;
-//
-//	}
-
-//	public String[][] recordDiagonalInferior(String[][] matrix) {
-//
-//		for (int i = 0; i < matrix.length; i++) {
-//			for (int j = 0; j <= i; j++) {
-//				System.out.print("posicion i - j:" + (i - j) + " Posicion j: " + j + " ");
-//				System.out.print(matrix[matrix.length - j - 1][j + i + 1]);
-//			}
-//			System.out.println();
-//		}
-//
-//		return matrix;
-//
-//	}
+	@Override
+	public CountMutation findById(Integer id) {
+		
+		return this.countMutationRepository.findFirstById(id);
+	}
 
 }

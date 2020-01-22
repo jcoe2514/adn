@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import com.adn.sistema.dao.AdnDAO;
 import com.adn.sistema.entity.Adn;
+import com.adn.sistema.entity.CountMutation;
 import com.adn.sistema.service.AdnService;
 
 @Service
@@ -21,6 +22,11 @@ public class AdnServiceImpl implements AdnService{
 	@Override
 	public boolean validateMutation(Adn adn) {
 		return this.adnDAO.validateMutation(adn);
+	}
+	@Override
+	public CountMutation findById(Integer id) {
+		// TODO Auto-generated method stub
+		return adnDAO.findById(id);
 	}
 
 }
